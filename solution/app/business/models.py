@@ -1,10 +1,8 @@
 import uuid
 
-
+from app.database import Base
 from sqlalchemy import UUID, String
 from sqlalchemy.orm import Mapped, mapped_column
-
-from app.database import Base
 
 
 class BusinessModel(Base):
@@ -14,4 +12,3 @@ class BusinessModel(Base):
     name: Mapped[str] = mapped_column(String(50), unique=True)
     email: Mapped[str] = mapped_column(unique=True)
     hashed_password: Mapped[str]
-

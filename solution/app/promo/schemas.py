@@ -9,8 +9,6 @@ class PromoMode(Enum):
     UNIQUE = 'UNIQUE'
 
 
-
-
 class Target(BaseModel):
     age_from: int = Field(ge=0, le=100)
     age_until: int = Field(ge=0, le=100)

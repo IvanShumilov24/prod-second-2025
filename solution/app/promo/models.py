@@ -1,13 +1,10 @@
-import enum
 import uuid
-
-from typing import Optional, Dict, Any
-
-from sqlalchemy import UUID, JSON, String, ForeignKey, Enum
-from sqlalchemy.orm import Mapped, mapped_column
+from typing import Dict
 
 from app.database import Base
 from app.promo.schemas import PromoMode
+from sqlalchemy import UUID, JSON, String, ForeignKey, Enum
+from sqlalchemy.orm import Mapped, mapped_column
 
 
 class PromoModel(Base):
@@ -30,5 +27,3 @@ class PromoModel(Base):
     like_count: Mapped[int]
     used_count: Mapped[int]
     active: Mapped[bool]
-
-

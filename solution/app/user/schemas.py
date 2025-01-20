@@ -7,6 +7,7 @@ class UserTargetSettings(BaseModel):
     age: int = Field(max_length=100, min_length=0)
     country: str
 
+
 class User(BaseModel):
     name: str = Field(min_length=1, max_length=100)
     surname: str = Field(min_length=1, max_length=120)
@@ -14,10 +15,12 @@ class User(BaseModel):
     avatar_url: str = Field(max_length=350)
     other: UserTargetSettings
 
+
 class UserBase(BaseModel):
     name: str = Field(min_length=1, max_length=100)
     surname: str = Field(min_length=1, max_length=120)
     avatar_url: str = Field(max_length=350)
+
 
 class UserCreate(UserBase):
     email: str = Field(max_length=120, min_length=8)
@@ -36,5 +39,28 @@ class UserCreate(UserBase):
             )
         return password
 
+
 class UserUpdate(UserBase):
     password: str = Field(min_length=8, max_length=60)
+
+
+class UserUpdateDB(UserBase):
+    hashed_password: str = Field(min_length=8, max_length=60)
+
+
+class UserCreateDB(UserBase):
+    email: str = Field(max_length=120, min_length=8)
+    hashed_password: str = Field(min_length=8, max_length=60)
+    other: UserTargetSettings
+
+    @field_validator("password")
+    def validate_password(cls, password):
+        if not re.fullmatch(
+                r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$",
+                password
+        ):
+            raise ValueError(
+                "Пароль должен содержать латинские буквы, хотя бы одну заглавную, одну строчную, "
+                "одну цифру и специальные символы, и быть не менее 8 символов."
+            )
+        return password
