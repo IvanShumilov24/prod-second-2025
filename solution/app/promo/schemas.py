@@ -1,7 +1,7 @@
 from datetime import date, datetime
 from enum import Enum
 
-from pydantic import BaseModel, Field, field_validator, UUID4
+from pydantic import BaseModel, Field, field_validator, UUID4, AnyUrl
 
 
 class PromoMode(Enum):
@@ -31,7 +31,7 @@ class Target(BaseModel):
 
 class Promo(BaseModel):
     description: str = Field(max_length=300, min_length=10)
-    image_url: str = Field(max_length=350)
+    image_url: AnyUrl = Field(max_length=350)
     target: Target
     max_count: int
     active_from: date
@@ -70,7 +70,7 @@ class Promo(BaseModel):
 
 class PromoBase(BaseModel):
     description: str = Field(max_length=300, min_length=10)
-    image_url: str = Field(max_length=350)
+    image_url: AnyUrl = Field(max_length=350)
     target: Target
     max_count: int
     active_from: date

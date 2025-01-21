@@ -27,3 +27,8 @@ class BusinessCreateDB(BusinessBase):
 
 class BusinessUpdateDB(BaseModel):
     hashed_password: str
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
