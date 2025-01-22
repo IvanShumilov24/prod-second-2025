@@ -1,5 +1,6 @@
 from typing import TypeVar, Generic, Optional, Union, Dict, Any
 
+from loguru import logger
 from pydantic import BaseModel
 from sqlalchemy import select, insert, delete, update
 from sqlalchemy.exc import SQLAlchemyError
@@ -51,15 +52,17 @@ class BaseDAO(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         else:
             create_data = obj_in.model_dump(exclude_unset=True)
         try:
-            stmt = insert(cls.model).values(
+            query = insert(cls.model).values(
                 **create_data).returning(cls.model)
-            result = await session.execute(stmt)
+            result = await session.execute(query)
             return result.scalars().first()
         except (SQLAlchemyError, Exception) as e:
             if isinstance(e, SQLAlchemyError):
                 msg = "Database Exc: Cannot insert data into table"
             elif isinstance(e, Exception):
                 msg = "Unknown Exc: Cannot insert data into table"
+            logger.error(msg)
+            raise e
 
         return None
 

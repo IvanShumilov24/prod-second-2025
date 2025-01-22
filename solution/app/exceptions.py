@@ -4,7 +4,6 @@ from fastapi import HTTPException, status
 class BaseServiceException(HTTPException):
     status_code = 500
     detail = ""
-    status = None
 
     def __init__(self):
         super().__init__(status_code=self.status_code, detail=self.detail)
@@ -27,3 +26,12 @@ class InvalidCredentialsException(HTTPException):
 
 class BusinessExistsException(BaseServiceException):
     detail = "Business already exists"
+
+
+class PromoCreationException(BaseServiceException):
+    detail = "Failed create promo"
+
+
+class BusinessNotAuthException(HTTPException):
+    def __init__(self):
+        super().__init__(status_code=status.HTTP_401_UNAUTHORIZED, detail="Business not authorized")

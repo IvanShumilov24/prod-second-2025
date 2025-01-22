@@ -21,7 +21,6 @@ class BusinessService:
     async def register_new_business(cls, business: BusinessCreate) -> BusinessModel:
         async with async_session_maker() as session:
             business_exist = await BusinessDAO.find_one_or_none(session, email=business.email)
-            print(business_exist)
             if business_exist:
                 logger.error(f"Failed register new business with details {business} ---> Business already exists")
                 raise BusinessExistsException
@@ -47,20 +46,27 @@ class BusinessService:
 
     @classmethod
     async def create_token(cls, business_id: uuid.UUID) -> str:
+        access_token = cls._create_access_token(business_id)
+        return access_token
+
+    @classmethod
+    def _create_access_token(cls, business_id: uuid.UUID) -> str:
         to_encode = {
             "sub": str(business_id),
             "exp": datetime.utcnow() + timedelta(
                 minutes=720)
         }
         encoded_jwt = jwt.encode(
-            to_encode, settings.RANDOM_SECRET, algorithm='HS256')
-        return encoded_jwt
+            to_encode, settings.RANDOM_SECRET, algorithm="HS256")
+        return f'Bearer {encoded_jwt}'
 
     @classmethod
-    async def logout(cls, token: uuid.UUID) -> None:
+    async def get_business(cls, business_id: uuid.UUID) -> BusinessModel:
         async with async_session_maker() as session:
-            refresh_session = await RefreshSessionDAO.find_one_or_none(session,
-                                                                       RefreshSessionModel.refresh_token == token)
-            if refresh_session:
-                await RefreshSessionDAO.delete(session, id=refresh_session.id)
-            await session.commit()
+            business = await BusinessDAO.find_one_or_none(session, id=business_id)
+        if business is None:
+            logger.error(f"Business with id {business_id} not found")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Business not found")
+        logger.info(f"Business with id {business_id} found")
+        return business

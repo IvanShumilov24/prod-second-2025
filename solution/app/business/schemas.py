@@ -29,6 +29,6 @@ class BusinessUpdateDB(BaseModel):
     hashed_password: str
 
 
-class Token(BaseModel):
-    access_token: str
-    token_type: str
+class BusinessAuthResponse(BaseModel):
+    token: str
+    company_id: UUID4

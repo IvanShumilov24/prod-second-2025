@@ -19,7 +19,9 @@ dependencies = [
     "python-multipart (>=0.0.20,<0.0.21)",
     "passlib (>=1.7.4,<2.0.0)",
     "bcrypt (>=4.2.1,<5.0.0)",
-    "python-jose (>=3.3.0,<4.0.0)"
+    "python-jose (>=3.3.0,<4.0.0)",
+    "pytest (>=8.3.4,<9.0.0)",
+    "hypothesis (>=6.124.2,<7.0.0)"
 ]
 
 

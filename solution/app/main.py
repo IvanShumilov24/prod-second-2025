@@ -6,7 +6,7 @@ from starlette.responses import JSONResponse
 
 from business.router import router as business_router
 from config import settings
-from solution.app.exceptions import BusinessExistsException
+from solution.app.exceptions import BusinessExistsException, InvalidCredentialsException, BusinessNotAuthException
 
 app = FastAPI(title="PROOOOOOOOOOOOOOOOOD")
 
@@ -23,9 +23,24 @@ async def business_exists_exception_handler(request: Request, exc: ValidationErr
                         content={"status": "error", "message": "Такой email уже зарегистрирован."})
 
 
+@app.exception_handler(InvalidCredentialsException)
+async def business_exists_exception_handler(request: Request, exc: ValidationError):
+    return JSONResponse(status_code=status.HTTP_401_UNAUTHORIZED,
+                        content={"status": "error", "message": "Неверный email или пароль."})
+
+
+@app.exception_handler(BusinessNotAuthException)
+async def business_exists_exception_handler(request: Request, exc: ValidationError):
+    return JSONResponse(status_code=status.HTTP_401_UNAUTHORIZED,
+                        content={
+                            "status": "error",
+                            "message": "Пользователь не авторизован."
+                        })
+
+
 @app.get("/api/ping")
-def send():
-    return {"status": "ok"}
+def send() -> str:
+    return "PROOOOOOOOOOOOOOOOOD"
 
 
 app.include_router(business_router)

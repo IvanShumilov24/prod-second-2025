@@ -24,8 +24,9 @@ class Target(BaseModel):
 
     @field_validator('age_from')
     def validate_age_from(cls, age_from, values):
-        if 'age_until' in values and age_from > values['age_until']:
-            raise ValueError("age_from не должен превышать age_until.")
+        if 'age_until' in values.data and values['age_until'] is not None:
+            if age_from > values['age_until']:
+                raise ValueError("age_from не должен превышать age_until.")
         return age_from
 
 
@@ -90,6 +91,24 @@ class PromoCreate(PromoBase):
         return promo_unique
 
 
+class PromoCreateDB(PromoBase):
+    mode: PromoMode
+    promo_common: str = Field(min_length=5, max_length=30)
+    promo_unique: list[str] = Field(default_factory=list, max_length=5000, min_length=1)
+    company_id: UUID4
+    company_name: str = Field(max_length=50, min_length=5)
+    like_count: int = Field(default=0)
+    used_count: int = Field(default=0)
+    active: bool = Field(default=True)
+
+    @field_validator("promo_unique")
+    def validate_promo_unique(cls, promo_unique):
+        for promo in promo_unique:
+            if len(promo) > 30:
+                raise ValueError("Длина промокода не может превышать 30 символов")
+        return promo_unique
+
+
 class PromoUpdate(PromoBase):
     pass
 
@@ -123,3 +142,7 @@ class PromoForUser(PromoBase):
 class PromoStat(BaseModel):
     activate_count: int
     countries: list[dict[str, int]]
+
+
+class PromoCreatedResponce(BaseModel):
+    id: UUID4

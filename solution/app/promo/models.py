@@ -1,10 +1,12 @@
 import uuid
+from datetime import datetime
 from typing import Dict
 
-from app.database import Base
-from app.promo.schemas import PromoMode
-from sqlalchemy import UUID, JSON, String, ForeignKey, Enum
+from sqlalchemy import UUID, JSON, String, ForeignKey, Enum, DATETIME
 from sqlalchemy.orm import Mapped, mapped_column
+
+from solution.app.database import Base
+from solution.app.promo.schemas import PromoMode
 
 
 class PromoModel(Base):
@@ -14,8 +16,8 @@ class PromoModel(Base):
     image_url: Mapped[str] = mapped_column(String(350))
     target: Mapped[Dict[str, int]] = mapped_column(JSON)
     max_count: Mapped[int]
-    active_from: Mapped[str] = mapped_column(String(10))
-    active_until: Mapped[str] = mapped_column(String(10))
+    active_from: Mapped[datetime] = mapped_column(DATETIME)
+    active_until: Mapped[datetime] = mapped_column(DATETIME)
     mode: Mapped[PromoMode] = mapped_column(Enum(PromoMode, name="mode_enum"))
     promo_common: Mapped[str]
     promo_unique: Mapped[list[str]] = mapped_column(JSON)
@@ -24,6 +26,6 @@ class PromoModel(Base):
         "business.id", ondelete="CASCADE"))
     company_name: Mapped[str] = mapped_column(String(50), ForeignKey(
         "business.name", ondelete="CASCADE"))
-    like_count: Mapped[int]
-    used_count: Mapped[int]
-    active: Mapped[bool]
+    like_count: Mapped[int] = mapped_column(default=0)
+    used_count: Mapped[int] = mapped_column(default=0)
+    active: Mapped[bool] = mapped_column(default=True)
