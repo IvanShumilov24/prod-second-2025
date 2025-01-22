@@ -40,6 +40,7 @@ class Promo(BaseModel):
     mode: PromoMode
     promo_common: str = Field(min_length=5, max_length=30)
     promo_unique: list[str] = Field(default_factory=list, max_length=5000, min_length=1)
+    promo_id: UUID4
     company_id: UUID4
     company_name: str = Field(max_length=50, min_length=5)
     like_count: int = Field(default=0)
@@ -53,13 +54,18 @@ class Promo(BaseModel):
 
         now = datetime.now().date()
 
-        if values.get("active_from") and values.get("active_until"):
-            if not (values["active_from"] <= now <= values["active_until"]):
+        active_from = values.data.get("active_from")
+        active_until = values.data.get("active_until")
+
+        if active_from and active_until:
+            if not (active_from <= now <= active_until):
                 return False
-        elif values.get("active_from") and now < values["active_from"]:
+        elif active_from and now < active_from:
             return False
-        elif values.get("active_until") and now > values["active_until"]:
+        elif active_until and now > active_until:
             return False
+
+        return True
 
     @field_validator("promo_unique")
     def validate_promo_unique(cls, promo_unique):
@@ -144,5 +150,5 @@ class PromoStat(BaseModel):
     countries: list[dict[str, int]]
 
 
-class PromoCreatedResponce(BaseModel):
+class PromoCreatedResponse(BaseModel):
     id: UUID4

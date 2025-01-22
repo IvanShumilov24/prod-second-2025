@@ -6,7 +6,8 @@ from starlette.responses import JSONResponse
 
 from business.router import router as business_router
 from config import settings
-from solution.app.exceptions import BusinessExistsException, InvalidCredentialsException, BusinessNotAuthException
+from solution.app.exceptions import BusinessExistsException, InvalidCredentialsException, BusinessNotAuthException, \
+    PromoNotFoundException, PromoNotBelongBusinessException
 
 app = FastAPI(title="PROOOOOOOOOOOOOOOOOD")
 
@@ -24,17 +25,35 @@ async def business_exists_exception_handler(request: Request, exc: ValidationErr
 
 
 @app.exception_handler(InvalidCredentialsException)
-async def business_exists_exception_handler(request: Request, exc: ValidationError):
+async def invalid_credintials_exception_handler(request: Request, exc: ValidationError):
     return JSONResponse(status_code=status.HTTP_401_UNAUTHORIZED,
                         content={"status": "error", "message": "Неверный email или пароль."})
 
 
 @app.exception_handler(BusinessNotAuthException)
-async def business_exists_exception_handler(request: Request, exc: ValidationError):
+async def business_not_auth_exception_handler(request: Request, exc: ValidationError):
     return JSONResponse(status_code=status.HTTP_401_UNAUTHORIZED,
                         content={
                             "status": "error",
                             "message": "Пользователь не авторизован."
+                        })
+
+
+@app.exception_handler(PromoNotFoundException)
+async def promo_not_found_exception_handler(request: Request, exc: ValidationError):
+    return JSONResponse(status_code=status.HTTP_404_NOT_FOUND,
+                        content={
+                            "status": "error",
+                            "message": "Промокод не найден."
+                        })
+
+
+@app.exception_handler(PromoNotBelongBusinessException)
+async def promo_not_belong_business(request: Request, exc: ValidationError):
+    return JSONResponse(status_code=status.HTTP_404_NOT_FOUND,
+                        content={
+                            "status": "error",
+                            "message": "Промокод не принадлежит этой компании."
                         })
 
 

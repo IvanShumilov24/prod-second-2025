@@ -32,6 +32,18 @@ class PromoCreationException(BaseServiceException):
     detail = "Failed create promo"
 
 
+class PromoGetException(BaseServiceException):
+    detail = "Failed get promo"
+
+
+class PromoNotFoundException(BaseServiceException):
+    detail = "Promo not found"
+
+
+class PromoNotBelongBusinessException(BaseServiceException):
+    detail = "Promo does not belong business"
+
+
 class BusinessNotAuthException(HTTPException):
     def __init__(self):
         super().__init__(status_code=status.HTTP_401_UNAUTHORIZED, detail="Business not authorized")
