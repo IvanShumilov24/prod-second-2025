@@ -23,7 +23,6 @@ async def get_current_business(
         if business_id is None:
             raise InvalidTokenException
     except Exception as e:
-        print(e)
         raise InvalidTokenException
     current_business = await BusinessService.get_business(uuid.UUID(business_id))
     return current_business

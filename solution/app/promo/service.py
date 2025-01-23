@@ -9,13 +9,13 @@ from solution.app.exceptions import PromoCreationException, PromoGetException, P
     PromoNotBelongBusinessException
 from solution.app.promo.dao import PromoDAO
 from solution.app.promo.models import PromoModel
-from solution.app.promo.schemas import PromoCreate, PromoCreateDB
+from solution.app.promo.schemas import PromoCreate, PromoCreateDB, PromoUpdate
 from solution.app.promo.utils import sort_promo_list
 
 
 class PromoService:
     @classmethod
-    async def create_promo(cls, promo: PromoCreate, business: Business) -> UUID4:
+    async def create_promo(cls, business: Business, promo: PromoCreate) -> UUID4:
         try:
             async with async_session_maker() as session:
                 db_promo = await PromoDAO.add(session, PromoCreateDB(**promo.model_dump(), company_id=business.id,
@@ -29,7 +29,7 @@ class PromoService:
         return db_promo.promo_id
 
     @classmethod
-    async def get_all_promo_by_business(cls, business: Business, limit: int, offset: int,
+    async def get_all_promo(cls, business: Business, limit: int, offset: int,
                                         sort_by: Literal["active_from", "active_until"], ) -> list[PromoModel]:
         try:
             async with async_session_maker() as session:
@@ -43,7 +43,7 @@ class PromoService:
         return promo_list
 
     @classmethod
-    async def get_promo(cls, promo_id: UUID4, business: Business) -> PromoModel:
+    async def get_promo(cls, business: Business, promo_id: UUID4) -> PromoModel:
         try:
             async with async_session_maker() as session:
                 promo = await PromoDAO.find_one_or_none(session, promo_id=promo_id)
@@ -57,3 +57,22 @@ class PromoService:
             raise PromoNotBelongBusinessException
         logger.info(f"Found promo {promo_id}")
         return promo
+
+    @classmethod
+    async def update_promo(cls, business: Business, promo_id: UUID4, new_promo: PromoUpdate) -> PromoModel:
+        promo = await cls.get_promo(business, promo_id)
+        if promo:
+            try:
+                async with async_session_maker() as session:
+                    db_promo = await PromoDAO.update(session, PromoModel.promo_id == promo_id, obj_in=new_promo)
+                    await session.commit()
+            except Exception as e:
+                logger.error(f"Failed update promo {promo_id} by business {business.id} ---> Error {str(e)}")
+                raise PromoGetException
+
+
+            logger.info(f"Promo {promo_id} successful update by busines {business.id}")
+            return db_promo
+
+
+

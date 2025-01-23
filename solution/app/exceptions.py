@@ -23,6 +23,9 @@ class InvalidCredentialsException(HTTPException):
     def __init__(self):
         super().__init__(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid username or password")
 
+class BusinessNotAuthException(HTTPException):
+    def __init__(self):
+        super().__init__(status_code=status.HTTP_401_UNAUTHORIZED, detail="Business not authorized")
 
 class BusinessExistsException(BaseServiceException):
     detail = "Business already exists"
@@ -35,6 +38,8 @@ class PromoCreationException(BaseServiceException):
 class PromoGetException(BaseServiceException):
     detail = "Failed get promo"
 
+class PromoUpdateException(BaseServiceException):
+    detail = "Failed update promo"
 
 class PromoNotFoundException(BaseServiceException):
     detail = "Promo not found"
@@ -43,7 +48,3 @@ class PromoNotFoundException(BaseServiceException):
 class PromoNotBelongBusinessException(BaseServiceException):
     detail = "Promo does not belong business"
 
-
-class BusinessNotAuthException(HTTPException):
-    def __init__(self):
-        super().__init__(status_code=status.HTTP_401_UNAUTHORIZED, detail="Business not authorized")
