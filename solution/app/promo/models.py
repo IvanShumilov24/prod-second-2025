@@ -1,9 +1,11 @@
 import uuid
-from datetime import datetime
+from datetime import date
 from typing import Dict
 
-from sqlalchemy import UUID, JSON, String, ForeignKey, Enum, DATETIME
+from pydantic import AnyUrl
+from sqlalchemy import UUID, JSON, String, ForeignKey, Enum, Date
 from sqlalchemy.orm import Mapped, mapped_column
+from typing_extensions import Optional
 
 from solution.app.database import Base
 from solution.app.promo.schemas import PromoMode
@@ -13,12 +15,12 @@ class PromoModel(Base):
     __tablename__ = 'promo'
 
     description: Mapped[str] = mapped_column(String(300))
-    image_url: Mapped[str] = mapped_column(String(350))
+    image_url: Mapped[AnyUrl] = mapped_column(String(350))
     target: Mapped[Dict[str, int]] = mapped_column(JSON)
     max_count: Mapped[int]
-    active_from: Mapped[datetime] = mapped_column(DATETIME)
-    active_until: Mapped[datetime] = mapped_column(DATETIME)
-    mode: Mapped[PromoMode] = mapped_column(Enum(PromoMode, name="mode_enum"))
+    active_from: Mapped[Optional[date]] = mapped_column(Date)
+    active_until: Mapped[Optional[date]] = mapped_column(Date)
+    mode: Mapped[PromoMode] = mapped_column(Enum(PromoMode, name="mode"))
     promo_common: Mapped[str]
     promo_unique: Mapped[list[str]] = mapped_column(JSON)
     promo_id: Mapped[uuid.UUID] = mapped_column(UUID, primary_key=True, index=True, default=uuid.uuid4)

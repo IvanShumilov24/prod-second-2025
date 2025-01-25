@@ -16,17 +16,18 @@ router = APIRouter(prefix="/business", tags=["B2B"])
 
 @router.post("/auth/sign-up", status_code=status.HTTP_200_OK)
 async def sign_up(
+        response: Response,
         business: BusinessCreate
 ) -> BusinessAuthResponse:
-    business = await BusinessService.register_new_business(business)
-    token = await BusinessService.create_token(business.id)
+    db_business = await BusinessService.register_new_business(business)
+    token = await BusinessService.create_token(db_business.id)
     response.set_cookie(
-        'access_token',
+        'business_access_token',
         token,
         max_age=720 * 60,
         httponly=True
     )
-    return BusinessAuthResponse(token=token, company_id=business.id)
+    return BusinessAuthResponse(token=token, company_id=db_business.id)
 
 
 @router.post("/auth/sign-in")
@@ -40,7 +41,7 @@ async def sign_in(
         raise InvalidCredentialsException
     token = await BusinessService.create_token(business.id)
     response.set_cookie(
-        'access_token',
+        'business_access_token',
         token,
         max_age=720 * 60,
         httponly=True
@@ -70,7 +71,9 @@ async def get_promo(promo_id: UUID4, business: Business = Depends(get_current_bu
     promo = await PromoService.get_promo(business, promo_id)
     return promo
 
+
 @router.patch("/promo/{id}")
-async def update_promo(promo_id: UUID4, new_promo: PromoUpdate, business: Business = Depends(get_current_business)) -> Promo:
+async def update_promo(promo_id: UUID4, new_promo: PromoUpdate,
+                       business: Business = Depends(get_current_business)) -> Promo:
     bd_promo = await PromoService.update_promo(business, promo_id, new_promo)
     return bd_promo

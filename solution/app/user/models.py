@@ -17,3 +17,4 @@ class UserModel(Base):
     email: Mapped[str] = mapped_column(String(120))
     avatar_url: Mapped[str] = mapped_column(String(350))
     other: Mapped[dict[str, Any]] = mapped_column(JSON)
+    hashed_password: Mapped[str]

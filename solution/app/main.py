@@ -7,7 +7,8 @@ from starlette.responses import JSONResponse
 from business.router import router as business_router
 from config import settings
 from solution.app.exceptions import BusinessExistsException, InvalidCredentialsException, BusinessNotAuthException, \
-    PromoNotFoundException, PromoNotBelongBusinessException
+    PromoNotFoundException, PromoNotBelongBusinessException, UserExistsException
+from user.router import router as user_router
 
 app = FastAPI(title="PROOOOOOOOOOOOOOOOOD")
 
@@ -18,14 +19,15 @@ async def validation_exception_handler(request: Request, exc: ValidationError):
                         content={"status": "error", "message": "Ошибка в данных запроса."})
 
 
+@app.exception_handler(UserExistsException)
 @app.exception_handler(BusinessExistsException)
 async def business_exists_exception_handler(request: Request, exc: ValidationError):
     return JSONResponse(status_code=status.HTTP_409_CONFLICT,
-                        content={"status": "error", "message": "Такой email уже зарегистрирован."})
+                        content={"status": "error", "message": "Такой email уже зарегистрирован"})
 
 
 @app.exception_handler(InvalidCredentialsException)
-async def invalid_credintials_exception_handler(request: Request, exc: ValidationError):
+async def invalid_credentials_exception_handler(request: Request, exc: ValidationError):
     return JSONResponse(status_code=status.HTTP_401_UNAUTHORIZED,
                         content={"status": "error", "message": "Неверный email или пароль."})
 
@@ -62,7 +64,8 @@ def send() -> str:
     return "PROOOOOOOOOOOOOOOOOD"
 
 
-app.include_router(business_router)
+app.include_router(business_router, prefix="/api")
+app.include_router(user_router, prefix="/api")
 
 if __name__ == "__main__":
     import uvicorn

@@ -1,4 +1,6 @@
-from pydantic import BaseModel, EmailStr, UUID4, Field
+import re
+
+from pydantic import BaseModel, EmailStr, UUID4, Field, field_validator
 
 
 class Business(BaseModel):
@@ -15,6 +17,18 @@ class BusinessBase(BaseModel):
 
 class BusinessCreate(BusinessBase):
     password: str
+
+    @field_validator("password", check_fields=False)
+    def validate_password(cls, password):
+        if not re.fullmatch(
+                r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$",
+                password
+        ):
+            raise ValueError(
+                "Пароль должен содержать латинские буквы, хотя бы одну заглавную, одну строчную, "
+                "одну цифру и специальные символы, и быть не менее 8 символов."
+            )
+        return password
 
 
 class BusinessUpdate(BaseModel):

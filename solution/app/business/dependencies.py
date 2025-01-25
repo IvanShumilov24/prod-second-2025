@@ -6,11 +6,11 @@ from typing_extensions import Optional
 
 from solution.app.business.models import BusinessModel
 from solution.app.business.service import BusinessService
-from solution.app.business.utils import OAuth2PasswordBearerWithCookie
 from solution.app.config import settings
 from solution.app.exceptions import InvalidTokenException
+from solution.app.utils import BusinessOAuth2PasswordBearerWithCookie
 
-oauth2_scheme = OAuth2PasswordBearerWithCookie(tokenUrl="/api/auth/login")
+oauth2_scheme = BusinessOAuth2PasswordBearerWithCookie(tokenUrl="/api/business/auth/sign-in")
 
 
 async def get_current_business(

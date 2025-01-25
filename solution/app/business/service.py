@@ -9,28 +9,31 @@ from typing_extensions import Optional
 from solution.app.business.dao import BusinessDAO
 from solution.app.business.models import BusinessModel
 from solution.app.business.schemas import BusinessCreate, BusinessCreateDB
-from solution.app.business.utils import get_password_hash, is_valid_password
 from solution.app.config import settings
 from solution.app.database import async_session_maker
 from solution.app.exceptions import BusinessExistsException
+from solution.app.utils import get_password_hash, is_valid_password
 
 
 class BusinessService:
 
     @classmethod
     async def register_new_business(cls, business: BusinessCreate) -> BusinessModel:
-        async with async_session_maker() as session:
-            business_exist = await BusinessDAO.find_one_or_none(session, email=business.email)
-            if business_exist:
-                logger.error(f"Failed register new business with details {business} ---> Business already exists")
-                raise BusinessExistsException
-            db_business = await BusinessDAO.add(
-                session,
-                BusinessCreateDB(
-                    **business.model_dump(),
-                    hashed_password=get_password_hash(business.password))
-            )
-            await session.commit()
+        try:
+            async with async_session_maker() as session:
+                business_exist = await BusinessDAO.find_one_or_none(session, email=business.email)
+        except Exception as e:
+            logger.error(f"Failed register new business with details {business} ---> Error: {str(e)}")
+        if business_exist:
+            logger.error(f"Failed register new business with details {business} ---> Business already exists")
+            raise BusinessExistsException
+        db_business = await BusinessDAO.add(
+            session,
+            BusinessCreateDB(
+                **business.model_dump(),
+                hashed_password=get_password_hash(business.password))
+        )
+        await session.commit()
 
         logger.info(f"New business successful registered with details {business}")
         return db_business

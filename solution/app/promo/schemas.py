@@ -1,7 +1,8 @@
 from datetime import date, datetime
 from enum import Enum
 
-from pydantic import BaseModel, Field, field_validator, UUID4, AnyUrl
+from pydantic import BaseModel, Field, field_validator, UUID4
+from pydantic_extra_types.country import CountryAlpha2
 
 
 class PromoMode(Enum):
@@ -12,7 +13,7 @@ class PromoMode(Enum):
 class Target(BaseModel):
     age_from: int = Field(ge=0, le=100)
     age_until: int = Field(ge=0, le=100)
-    country: str
+    country: CountryAlpha2
     categories: list[str]
 
     @field_validator('categories')
@@ -32,7 +33,7 @@ class Target(BaseModel):
 
 class Promo(BaseModel):
     description: str = Field(max_length=300, min_length=10)
-    image_url: AnyUrl = Field(max_length=350)
+    image_url: str = Field(max_length=350)
     target: Target
     max_count: int
     active_from: date
@@ -77,7 +78,7 @@ class Promo(BaseModel):
 
 class PromoBase(BaseModel):
     description: str = Field(max_length=300, min_length=10)
-    image_url: AnyUrl = Field(max_length=350)
+    image_url: str = Field(max_length=350)
     target: Target
     max_count: int
     active_from: date
@@ -95,6 +96,37 @@ class PromoCreate(PromoBase):
             if len(promo) > 30:
                 raise ValueError("Длина промокода не может превышать 30 символов")
         return promo_unique
+
+    # @field_validator('promo_common', 'promo_unique', mode='after')
+    # def validate_promo_fields(cls, value: Any, info: FieldSerializationInfo):
+    #     mode = info.context.get('mode')
+    #     if mode is None:
+    #         raise ValueError("Mode must be provided in context")
+    #     field_name = info.field_name
+    #     if mode == PromoMode.COMMON and field_name == 'promo_common':
+    #         if value is None:
+    #             raise ValueError("For 'common' mode 'promo_common' field is required")
+    #         return value
+    #     elif mode == PromoMode.COMMON and field_name == 'promo_unique' and value:
+    #         raise ValueError("For 'common' mode 'promo_unique' field must be empty")
+    #
+    #     if mode == PromoMode.UNIQUE and field_name == 'promo_unique':
+    #         if not value:
+    #             raise ValueError("For 'unique' mode 'promo_unique' field is required")
+    #         return value
+    #
+    #     elif mode == PromoMode.UNIQUE and field_name == 'promo_common' and value is not None:
+    #         raise ValueError("For 'unique' mode 'promo_common' field must be empty")
+    #
+    #     return value
+    #
+    #
+    # @model_validator(mode='before')
+    # def validate_before_model(cls, values):
+    #     mode = values.get('mode')
+    #     if mode is None:
+    #         raise ValueError("Mode must be provided")
+    #     return values
 
 
 class PromoCreateDB(PromoBase):
