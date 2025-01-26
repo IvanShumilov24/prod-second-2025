@@ -1,6 +1,8 @@
 #!/bin/sh
 set -e
 
-./.venv/bin/poetry run alembic upgrade head
+# Применяем миграции
+./.venv/bin/python -m alembic upgrade head
 
-exec "./.venv/bin/uvicorn" "$@"
+# Запускаем uvicorn
+exec ./.venv/bin/uvicorn "$@"
