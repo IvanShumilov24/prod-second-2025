@@ -10,4 +10,5 @@ RUN pip install alembic
 RUN pip install asyncpg
 RUN pip install pydantic-settings
 RUN poetry install --no-root
+RUN chmod +x ./entrypoint.sh
 ENTRYPOINT ["./entrypoint.sh"]
