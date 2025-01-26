@@ -24,6 +24,6 @@ RUN pip install asyncpg
 RUN pip install pydantic-settings
 RUN poetry install --no-root
 
-RUN alembic upgrade head
+#RUN alembic upgrade head
 
 CMD ["poetry", "run", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
