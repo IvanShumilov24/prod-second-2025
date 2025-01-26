@@ -18,17 +18,7 @@ class BusinessBase(BaseModel):
 class BusinessCreate(BusinessBase):
     password: str
 
-    @field_validator("password", check_fields=False)
-    def validate_password(cls, password):
-        if not re.fullmatch(
-                r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$",
-                password
-        ):
-            raise ValueError(
-                "Пароль должен содержать латинские буквы, хотя бы одну заглавную, одну строчную, "
-                "одну цифру и специальные символы, и быть не менее 8 символов."
-            )
-        return password
+
 
 
 class BusinessUpdate(BaseModel):
@@ -46,3 +36,19 @@ class BusinessUpdateDB(BaseModel):
 class BusinessAuthResponse(BaseModel):
     token: str
     company_id: UUID4
+
+class Auth(BaseModel):
+    email: EmailStr
+    password: str
+
+    @field_validator("password", check_fields=False)
+    def validate_password(cls, password):
+        if not re.fullmatch(
+                r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$",
+                password
+        ):
+            raise ValueError(
+                "Пароль должен содержать латинские буквы, хотя бы одну заглавную, одну строчную, "
+                "одну цифру и специальные символы, и быть не менее 8 символов."
+            )
+        return password

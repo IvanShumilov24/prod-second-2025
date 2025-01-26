@@ -13,6 +13,7 @@ from app.database import async_session_maker
 from app.exceptions import PromoCreationException, PromoGetException, PromoNotFoundException, \
     PromoNotBelongBusinessException
 from app.utils import sort_promo_list
+from starlette.routing import websocket_session
 
 
 class PromoService:
@@ -137,3 +138,39 @@ class PromoService:
                             is_activated_by_user=False,
                             is_liked_by_user=False,
                             comment_count=0)
+
+    @classmethod
+    async def like_promo(cls, promo_id) -> None:
+        try:
+            async with async_session_maker() as session:
+                promo = await PromoDAO.find_one_or_none(session, promo_id=promo_id)
+        except Exception as e:
+            logger.error(f"Failed get promo {promo_id} ---> Error: {str(e)}")
+            raise PromoGetException
+        if not promo:
+            logger.error(f"Not found promo {promo_id}")
+            raise PromoNotFoundException
+
+
+
+        logger.info(f"Promo {promo_id} successful liked")
+        return None
+
+    # @classmethod
+    # async def delete_like_promo(cls, promo_id) -> None:
+    #     try:
+    #         async with async_session_maker() as session:
+    #             promo = await PromoDAO.find_one_or_none(session, promo_id=promo_id)
+    #     except Exception as e:
+    #         logger.error(f"Failed get promo {promo_id} ---> Error: {str(e)}")
+    #         raise PromoGetException
+    #     if not promo:
+    #         logger.error(f"Not found promo {promo_id}")
+    #         raise PromoNotFoundException
+    #
+    #     try:
+    #         async with async_session_maker() as session:
+    #             db_promo = await PromoDAO.update(session, promo_id=promo_id)
+    #
+    #     logger.info(f"Like promo {promo_id} successful delete")
+    #     return None

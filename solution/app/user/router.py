@@ -4,11 +4,14 @@ from app.user.schemas import UserCreate, UserAuthResponse, User, UserUpdate
 from app.user.service import UserService
 from fastapi import APIRouter, status, Depends
 from pydantic import EmailStr, UUID4
+from starlette.authentication import AuthCredentials
 from starlette.responses import Response
 from typing_extensions import Literal
 
 from app.promo.schemas import PromoForUser
 from app.promo.service import PromoService
+
+from app.business.schemas import Auth
 
 router = APIRouter(prefix='/user', tags=['B2C'])
 
@@ -27,8 +30,8 @@ async def sign_up(response: Response, user: UserCreate) -> UserAuthResponse:
 
 
 @router.post("/auth/sign-in")
-async def sign_in(response: Response, email: EmailStr, password: str) -> UserAuthResponse:
-    user = await UserService.authenticate_user(email, password)
+async def sign_in(response: Response, auth: Auth) -> UserAuthResponse:
+    user = await UserService.authenticate_user(auth.email, auth.password)
     if not user:
         raise InvalidCredentialsException
     token = await UserService.create_token(user.id)
@@ -64,3 +67,13 @@ async def get_feed(response: Response, active: bool | Literal[True, False, None]
 async def get_promo(id: UUID4, current_user: UserModel = Depends(get_current_user)) -> PromoForUser:
     promo = await PromoService.get_promo_by_user(id)
     return promo
+
+# @router.post("/promo/{id}/like")
+# async def like_promo(id: UUID4, current_user: UserModel = Depends(get_current_user)):
+#     await PromoService.like_promo(id)
+#     return {"status": 'ok'}
+#
+# @router.delete("/promo/{id}/like")
+# async def like_promo(id: UUID4, current_user: UserModel = Depends(get_current_user)):
+#     await PromoService.delete_like_promo(id)
+#     return {"status": 'ok'}

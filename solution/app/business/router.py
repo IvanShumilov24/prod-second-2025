@@ -7,6 +7,7 @@ from fastapi import APIRouter, status, Response
 from fastapi.params import Depends
 from pydantic import EmailStr, UUID4
 
+from .schemas import Auth
 from ..exceptions import InvalidCredentialsException
 from app.promo.schemas import PromoCreate, PromoCreatedResponse, Promo, PromoUpdate
 from app.promo.service import PromoService
@@ -33,10 +34,9 @@ async def sign_up(
 @router.post("/auth/sign-in")
 async def sign_in(
         response: Response,
-        email: str,
-        password: str
+        auth: Auth
 ) -> BusinessAuthResponse:
-    business = await BusinessService.authenticate_business(email, password)
+    business = await BusinessService.authenticate_business(auth.email, auth.password)
     if not business:
         raise InvalidCredentialsException
     token = await BusinessService.create_token(business.id)
