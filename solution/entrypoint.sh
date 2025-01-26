@@ -1,8 +1,6 @@
 #!/bin/sh
 set -e
 
-# Применяем миграции
-./.venv/bin/python -m alembic upgrade head
+poetry run alembic upgrade head
 
-# Запускаем uvicorn
-exec ./.venv/bin/uvicorn "$@"
+poetry run uvicorn app.main:app --host 0.0.0.0 --port 8080
