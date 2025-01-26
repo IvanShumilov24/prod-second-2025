@@ -33,7 +33,7 @@ async def sign_up(
 @router.post("/auth/sign-in")
 async def sign_in(
         response: Response,
-        email: EmailStr,
+        email: str,
         password: str
 ) -> BusinessAuthResponse:
     business = await BusinessService.authenticate_business(email, password)
