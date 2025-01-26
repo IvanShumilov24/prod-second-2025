@@ -9,11 +9,11 @@ class Settings:
 
     POSTGRES_CONN = os.getenv("POSTGRES_CONN")
     POSTGRES_JDBC_URL = os.getenv("POSTGRES_JDBC_URL")
-    POSTGRES_USERNAME = os.getenv("POSTGRES_USERNAME")
-    POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD")
-    POSTGRES_HOST = os.getenv("POSTGRES_HOST")
-    POSTGRES_PORT = os.getenv("POSTGRES_PORT")
-    POSTGRES_DATABASE = os.getenv("POSTGRES_DATABASE")
+    POSTGRES_USERNAME = os.getenv("POSTGRES_USERNAME", "postgres")
+    POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "postgres")
+    POSTGRES_HOST = os.getenv("POSTGRES_HOST", "postgres")
+    POSTGRES_PORT = os.getenv("POSTGRES_PORT", "5432")
+    POSTGRES_DATABASE = os.getenv("POSTGRES_DATABASE", "prod")
 
     @property
     def DATABASE_URL(self):
