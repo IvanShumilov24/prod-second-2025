@@ -1,14 +1,14 @@
 import uuid
 from datetime import date
-from typing import Dict
+from typing import Dict, Any
 
+from app.promo.schemas import PromoMode
 from pydantic import AnyUrl
 from sqlalchemy import UUID, JSON, String, ForeignKey, Enum, Date
 from sqlalchemy.orm import Mapped, mapped_column
 from typing_extensions import Optional
 
-from solution.app.database import Base
-from solution.app.promo.schemas import PromoMode
+from app.database import Base
 
 
 class PromoModel(Base):
@@ -16,7 +16,7 @@ class PromoModel(Base):
 
     description: Mapped[str] = mapped_column(String(300))
     image_url: Mapped[AnyUrl] = mapped_column(String(350))
-    target: Mapped[Dict[str, int]] = mapped_column(JSON)
+    target: Mapped[Dict[str, Any]] = mapped_column(JSON)
     max_count: Mapped[int]
     active_from: Mapped[Optional[date]] = mapped_column(Date)
     active_until: Mapped[Optional[date]] = mapped_column(Date)

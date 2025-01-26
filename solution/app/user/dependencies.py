@@ -1,14 +1,14 @@
 import uuid
 from typing import Optional
 
+from app.user.models import UserModel
+from app.user.service import UserService
 from fastapi.params import Depends
 from jose import jwt
 
-from solution.app.config import settings
-from solution.app.exceptions import InvalidTokenException
-from solution.app.user.models import UserModel
-from solution.app.user.service import UserService
-from solution.app.utils import UserOAuth2PasswordBearerWithCookie
+from app.config import settings
+from app.exceptions import InvalidTokenException
+from app.utils import UserOAuth2PasswordBearerWithCookie
 
 oauth2_scheme = UserOAuth2PasswordBearerWithCookie(tokenUrl="/api/user/auth/sign-in")
 

@@ -1,17 +1,18 @@
 from typing import Literal
 
+from app.promo.dao import PromoDAO
+from app.promo.models import PromoModel
+from app.promo.schemas import PromoCreate, PromoCreateDB, PromoUpdate, Promo, PromoForUser, Target
 from fastapi.params import Depends
 from loguru import logger
 from pydantic import UUID4
+from pydantic_extra_types.country import CountryAlpha2
 
-from solution.app.business.schemas import Business
-from solution.app.database import async_session_maker
-from solution.app.exceptions import PromoCreationException, PromoGetException, PromoNotFoundException, \
+from app.business.schemas import Business
+from app.database import async_session_maker
+from app.exceptions import PromoCreationException, PromoGetException, PromoNotFoundException, \
     PromoNotBelongBusinessException
-from solution.app.promo.dao import PromoDAO
-from solution.app.promo.models import PromoModel
-from solution.app.promo.schemas import PromoCreate, PromoCreateDB, PromoUpdate, Promo
-from solution.app.utils import sort_promo_list
+from app.utils import sort_promo_list
 
 
 class PromoService:
@@ -73,3 +74,66 @@ class PromoService:
 
             logger.info(f"Promo {promo_id} successful update by business {business.id}")
             return db_promo
+
+    @classmethod
+    async def get_all_promo_by_user(cls, active: bool | None, limit: int = 10, offset: int = 0, category: str = None) -> \
+            list[PromoForUser]:
+        try:
+            async with async_session_maker() as session:
+                if active is None:
+                    promo_list = await PromoDAO.find_all(session, limit=limit, offset=offset)
+                else:
+                    promo_list = await PromoDAO.find_all(session, limit=limit, offset=offset, active=active)
+        except Exception as e:
+            logger.error(f"Failed get all promo ---> Error: {str(e)}")
+            raise PromoGetException
+        if category:
+            promo_list = [promo for promo in promo_list if category in promo.target["categories"]]
+        logger.info(f"Found {len(promo_list)} promo")
+        return [PromoForUser(description=promo.description,
+                             image_url=promo.image_url,
+                             target=Target(age_from=promo.target['age_from'],
+                                           age_until=promo.target['age_until'],
+                                           country=CountryAlpha2(promo.target["country"]),
+                                           categories=promo.target["categories"]),
+                             max_count=promo.max_count,
+                             active_from=promo.active_from,
+                             active_until=promo.active_until,
+                             promo_id=promo.promo_id,
+                             company_id=promo.company_id,
+                             company_name=promo.company_name,
+                             active=promo.active,
+                             like_count=promo.like_count,
+                             is_activated_by_user=False,
+                             is_liked_by_user=False,
+                             comment_count=0) for promo in promo_list]
+
+    @classmethod
+    async def get_promo_by_user(cls, promo_id) -> PromoForUser:
+        try:
+            async with async_session_maker() as session:
+                promo = await PromoDAO.find_one_or_none(session, promo_id=promo_id)
+        except Exception as e:
+            logger.error(f"Failed get promo {promo_id} ---> Error: {str(e)}")
+            raise PromoGetException
+        if not promo:
+            logger.error(f"Not found promo {promo_id}")
+            raise PromoNotFoundException
+        logger.info(f"Found promo {promo_id}")
+        return PromoForUser(description=promo.description,
+                            image_url=promo.image_url,
+                            target=Target(age_from=promo.target['age_from'],
+                                          age_until=promo.target['age_until'],
+                                          country=CountryAlpha2(promo.target["country"]),
+                                          categories=promo.target["categories"]),
+                            max_count=promo.max_count,
+                            active_from=promo.active_from,
+                            active_until=promo.active_until,
+                            promo_id=promo.promo_id,
+                            company_id=promo.company_id,
+                            company_name=promo.company_name,
+                            active=promo.active,
+                            like_count=promo.like_count,
+                            is_activated_by_user=False,
+                            is_liked_by_user=False,
+                            comment_count=0)

@@ -1,7 +1,7 @@
 from datetime import date, datetime
 from enum import Enum
 
-from pydantic import BaseModel, Field, field_validator, UUID4
+from pydantic import BaseModel, Field, field_validator, UUID4, ConfigDict
 from pydantic_extra_types.country import CountryAlpha2
 
 
@@ -50,6 +50,7 @@ class Promo(BaseModel):
 
     @field_validator('active')
     def validate_active(cls, active, values):
+        model_config = ConfigDict(from_attributes=True)
         if not active:
             return False
 
@@ -152,6 +153,8 @@ class PromoUpdate(PromoBase):
 
 
 class PromoForUser(PromoBase):
+    model_config = ConfigDict(from_attributes=True)
+
     promo_id: UUID4
     company_id: UUID4
     company_name: str = Field(max_length=50, min_length=5)
@@ -160,21 +163,6 @@ class PromoForUser(PromoBase):
     is_activated_by_user: bool
     is_liked_by_user: bool
     comment_count: int = Field(default=0)
-
-    @field_validator('active')
-    def validate_active(cls, active, values):
-        if not active:
-            return False
-
-        now = datetime.now().date()
-
-        if values.get("active_from") and values.get("active_until"):
-            if not (values["active_from"] <= now <= values["active_until"]):
-                return False
-        elif values.get("active_from") and now < values["active_from"]:
-            return False
-        elif values.get("active_until") and now > values["active_until"]:
-            return False
 
 
 class PromoStat(BaseModel):

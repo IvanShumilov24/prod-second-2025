@@ -5,7 +5,7 @@ from sqlalchemy import String, JSON, UUID
 from sqlalchemy.orm import Mapped
 from sqlalchemy.testing.schema import mapped_column
 
-from solution.app.database import Base
+from app.database import Base
 
 
 class UserModel(Base):

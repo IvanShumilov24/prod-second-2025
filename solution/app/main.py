@@ -4,11 +4,11 @@ from loguru import logger
 from pydantic import ValidationError
 from starlette.responses import JSONResponse
 
-from business.router import router as business_router
-from config import settings
-from solution.app.exceptions import BusinessExistsException, InvalidCredentialsException, BusinessNotAuthException, \
+from .config import settings
+from .exceptions import BusinessExistsException, InvalidCredentialsException, BusinessNotAuthException, \
     PromoNotFoundException, PromoNotBelongBusinessException, UserExistsException
-from user.router import router as user_router
+from app.business.router import router as business_router
+from app.user.router import router as user_router
 
 app = FastAPI(title="PROOOOOOOOOOOOOOOOOD")
 

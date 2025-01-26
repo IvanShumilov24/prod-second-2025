@@ -6,7 +6,7 @@ from sqlalchemy import select, insert, delete, update
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from solution.app.database import Base
+from .database import Base
 
 ModelType = TypeVar("ModelType", bound=Base)
 CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
@@ -28,7 +28,7 @@ class BaseDAO(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             session: AsyncSession,
             *filter,
             offset: int = 0,
-            limit: int = 100,
+            limit: int = 10,
             **filter_by
     ) -> list[ModelType]:
         query = (

@@ -7,8 +7,8 @@ from fastapi.security import OAuth2
 from fastapi.security.utils import get_authorization_scheme_param
 from passlib.context import CryptContext
 
-from solution.app.exceptions import BusinessNotAuthException
-from solution.app.promo.schemas import Promo
+from .exceptions import BusinessNotAuthException
+from .promo.schemas import Promo
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 

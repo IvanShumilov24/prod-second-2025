@@ -1,15 +1,15 @@
 from typing import Literal
 
+from .dependencies import get_current_business
+from app.business.schemas import BusinessCreate, BusinessAuthResponse, Business
+from app.business.service import BusinessService
 from fastapi import APIRouter, status, Response
 from fastapi.params import Depends
 from pydantic import EmailStr, UUID4
 
-from solution.app.business.dependencies import get_current_business
-from solution.app.business.schemas import BusinessCreate, BusinessAuthResponse, Business
-from solution.app.business.service import BusinessService
-from solution.app.exceptions import InvalidCredentialsException
-from solution.app.promo.schemas import PromoCreate, PromoCreatedResponse, Promo, PromoUpdate
-from solution.app.promo.service import PromoService
+from ..exceptions import InvalidCredentialsException
+from app.promo.schemas import PromoCreate, PromoCreatedResponse, Promo, PromoUpdate
+from app.promo.service import PromoService
 
 router = APIRouter(prefix="/business", tags=["B2B"])
 

@@ -1,14 +1,14 @@
 import uuid
 
+from app.business.models import BusinessModel
+from app.business.service import BusinessService
 from fastapi.params import Depends
 from jose import jwt
 from typing_extensions import Optional
 
-from solution.app.business.models import BusinessModel
-from solution.app.business.service import BusinessService
-from solution.app.config import settings
-from solution.app.exceptions import InvalidTokenException
-from solution.app.utils import BusinessOAuth2PasswordBearerWithCookie
+from app.config import settings
+from app.exceptions import InvalidTokenException
+from app.utils import BusinessOAuth2PasswordBearerWithCookie
 
 oauth2_scheme = BusinessOAuth2PasswordBearerWithCookie(tokenUrl="/api/business/auth/sign-in")
 

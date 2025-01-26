@@ -1,18 +1,18 @@
 import uuid
 from datetime import datetime, timedelta
 
+from app.business.dao import BusinessDAO
+from app.business.models import BusinessModel
+from app.business.schemas import BusinessCreate, BusinessCreateDB
 from jose import jwt
 from loguru import logger
 from pydantic import EmailStr
 from typing_extensions import Optional
 
-from solution.app.business.dao import BusinessDAO
-from solution.app.business.models import BusinessModel
-from solution.app.business.schemas import BusinessCreate, BusinessCreateDB
-from solution.app.config import settings
-from solution.app.database import async_session_maker
-from solution.app.exceptions import BusinessExistsException
-from solution.app.utils import get_password_hash, is_valid_password
+from app.config import settings
+from app.database import async_session_maker
+from app.exceptions import BusinessExistsException
+from app.utils import get_password_hash, is_valid_password
 
 
 class BusinessService:

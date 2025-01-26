@@ -3,7 +3,7 @@ import uuid
 from sqlalchemy import UUID, String
 from sqlalchemy.orm import Mapped, mapped_column
 
-from solution.app.database import Base
+from app.database import Base
 
 
 class BusinessModel(Base):

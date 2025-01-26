@@ -2,18 +2,18 @@ import uuid
 from datetime import datetime, timedelta
 from typing import Optional
 
+from app.user.dao import UserDAO
+from app.user.models import UserModel
+from app.user.schemas import UserCreate, UserCreateDB, User, UserUpdateDB
 from fastapi.params import Depends
 from jose import jwt
 from loguru import logger
 from pydantic import EmailStr, UUID4
 
-from solution.app.config import settings
-from solution.app.database import async_session_maker
-from solution.app.exceptions import UserExistsException, UserGetException, UserNotFoundException, UserUpdateException
-from solution.app.user.dao import UserDAO
-from solution.app.user.models import UserModel
-from solution.app.user.schemas import UserCreate, UserCreateDB, User, UserUpdateDB
-from solution.app.utils import get_password_hash, is_valid_password
+from app.config import settings
+from app.database import async_session_maker
+from app.exceptions import UserExistsException, UserGetException, UserNotFoundException, UserUpdateException
+from app.utils import get_password_hash, is_valid_password
 
 
 class UserService:
@@ -90,4 +90,5 @@ class UserService:
                 logger.error(f"Failed update user {user_id} ---> Error: {str(e)}")
                 raise UserUpdateException
 
+            logger.info(f"User {user_id} successful updated")
             return db_user
