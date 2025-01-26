@@ -3,6 +3,5 @@ __pycache__/
 .env
 .idea/
 *.log
-alembic.ini
 tests/
 
